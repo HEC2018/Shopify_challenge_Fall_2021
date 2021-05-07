@@ -6,18 +6,23 @@ from werkzeug.utils import secure_filename
 from flask.globals import current_app
 #import imghdr
 app = Flask(__name__)
+
 app.config['UPLOAD_PATH'] = 'images/'
+
+# restrict extensions for security
 app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.png', '.gif','.jpeg']
+
+# database cursor
 def get_cursor():
     conn = sql.connect("database.db")
     cur = conn.cursor()
     return (cur, conn)
 
-"""Initialize the sqlite database and fill up the `products` table with sample data."""
+# Initialize the sqlite database and fill up the `products` table with sample data.
 def initialize_db():
     (cur, conn) = get_cursor()
 
-    # Create products table with sample data
+    # Create products table with the sample data
     cur.execute("DROP TABLE IF EXISTS products")
     cur.execute("CREATE TABLE products (name TEXT, imgpath TEXT, price INTEGER, stock INTEGER)")
     cur.execute("""INSERT INTO products (name, imgpath, price, stock) VALUES \
@@ -27,23 +32,30 @@ def initialize_db():
         ('Many Books', 'images/book.jpg', 47900, 312)
     """)
 
-    # Create empty transactions table
+    # Create an empty transactions table
     cur.execute("DROP TABLE IF EXISTS transactions")
     cur.execute("CREATE TABLE transactions (timestamp TEXT, productid INTEGER, value INTEGER)")
     
     # Commit the db changes
     conn.commit()
-    print("Initialized database")
+    print("Initialize database")
 
+# Clear all tables in the database
+def initialize_db_clear():
+    (cur, conn) = get_cursor()
+    cur.execute("DELETE FROM products")
+    conn.commit()
+    print("All cleared")
+
+# Home_page 
 @app.route("/")
 def home_page():
     (cur, _) = get_cursor()
     cur.execute("SELECT rowid, * FROM products")
     
     rows = cur.fetchall()
-    print("Retrieved %d database entries" % len(rows))
     
-    # Pre-process product info for HTML templates
+    # Pre-process all product info for HTML5 templates later
     products = []
     for row in rows:
         products.append({
@@ -54,15 +66,17 @@ def home_page():
             "stock": "%d left" % (row[4]),
         })
     
-    # Display total sales so far
+    # Prepare the display for total sales 
     cur.execute("SELECT SUM(value) FROM transactions")
     result = cur.fetchone()[0]
-    earnings = result/100.0 if result else 0
+    earnings = result/100.000 if result else 0
 
-    return render_template("index.html", products=products, earnings=earnings)
+    return render_template("index.html", products = products, earnings = earnings)
 
+# Purchase button on main page
 @app.route("/buy/<product_id>")
 def buy(product_id):
+    # Try purchasing nothing. Invalid
     if not product_id:
         return render_template("message.html", message="Invalid product ID!")
 
@@ -71,10 +85,12 @@ def buy(product_id):
     cur.execute("SELECT rowid, price, stock FROM products WHERE rowid = ?", (product_id,))
     result = cur.fetchone()
 
+    # Try purchasing something not in database. Invalid
     if not result:
         return render_template("message.html", message="Invalid product ID!")
+    
     (rowid, price, stock) = result
-
+    # Not enough stock in inventory
     if stock <= 0:
         return render_template("message.html", message="Insufficient stock!")
 
@@ -86,29 +102,41 @@ def buy(product_id):
     conn.commit()
     return render_template("message.html", message="Purchase successful!")
 
+# Clear all button on main page
+@app.route('/clear_all')
+def clear():
+    initialize_db_clear()
+    return render_template("message.html", message="Clear all images inventory. Back to the main stage")
+
+# Upload button on main page
 @app.route('/upload')
 def upload():
     return render_template("upload.html")
 
+# Upload functionalities for upload page
 @app.route('/upload', methods=['POST'])
 def upload_file():
+    # Obtain info from an HTTP request
     uploaded_file = request.files['file']
     price = request.form.get("price")
     quantity = request.form.get("quantity")
     print(f'price = {price}, quantity = {quantity}')
     filename = secure_filename(uploaded_file.filename)
-    if filename != '':
+    if filename != '': # check if uploaded a file
         file_ext = os.path.splitext(filename)[1].lower()
         print(file_ext)
+        # Extension sanity check
         if file_ext in current_app.config['UPLOAD_EXTENSIONS']:
             file_name = filename.split(".")[0]
             (cur, conn) = get_cursor()
             cur.execute("SELECT rowid, price, stock FROM products WHERE name = ?", (file_name,))
             result = cur.fetchone()
+            # Duplicate checking
             if result and result[1] == price:
                 cur.execute("UPDATE products SET stock = stock + ? WHERE name = ?", (quantity,file_name,))
                 conn.commit()
             else:
+                # Put up new rows
                 image_path = os.path.join(app.config['UPLOAD_PATH'], filename)
                 uploaded_file.save(os.path.join("static/",image_path))
                 (cur, conn) = get_cursor()
@@ -116,6 +144,7 @@ def upload_file():
                 conn.commit()
     return redirect(url_for('upload'))
 
+# Reset button on the main page
 @app.route("/reset")
 def reset():
     initialize_db()
