@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Image Upload</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <style>
+        a.fixed {
+
+        position: fixed;
+
+        left: 0;
+
+        top: 0;
+
+        }
+    </style>
+</head>
+  <body>
+
+    <h1> 
+        <center>
+            <p>Image Upload</p>
+        </center>
+    </h1>
+    <h4>
+      <center>
+          <p> Please return to the main page after submission of images</p>
+      </center>
+
+    </h4>
+
+    <form method="POST" action="" enctype="multipart/form-data" class="row g-3">
+      
+     <div class="container col-4" >
+      <label for="basic-url" class="form-label">Please modify the filename of uploaded files with the name of product you want</label>
+        <div class="input-group mb-3">
+        <input type="file" class="form-control" id="inputGroupFile02" name="file">
+        </div>
+        
+        <div class="input-group mb-3">
+            <span class="input-group-text">$</span>
+            <input type="number" class="form-control" aria-label="Amount (to the nearest dollar)" placeholder="Price of image in cents" name="price">
+          </div>
+    
+          <div class="row mb-3">
+            <div class="col">
+              <input type="number" class="form-control" placeholder="Number of images you want to put up" aria-label="First name" name="quantity">
+            </div>
+          </div>   
+
+          <div class="col-12">
+            <button type="submit" value="Submit" class="btn btn-primary">Submit</button>
+          </div>   
+
+          <a class="fixed" href="/">Main page</a> <br>
+
+    </div>
+      
+    <form>
+
+  </body>
+</html>
