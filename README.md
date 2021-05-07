@@ -1,42 +1,43 @@
-# shopify-image-repo
-### Shopify Winter 2020 Developer Intern Challenge Question
-### Lovingly made by Ben Chapman-Kish :)
+# Shopify_challenge_Fall_2021
+### Shopify Fall 2021 Back-end Developer / Data Developer Intern Challenge Question (image repo)
+### Created by Xinhai Wei. (x67wei@uwaterloo.ca)
 
-This is a demonstrative image repository with capacity for selling products.
+In this project, I designed a creative image repository, with the functionality of purchasing products and putting up new products.
 
-This project has been implemented in Python using _Flask_ to serve a web interface
-and _sqlite3_ to track product information and transactions. Please note that as
-this is a backend interview role, I have invested no time whatsoever into making
-a beautiful user interface, although I could have if time permitted. ;)
+## How I built it
+
+Technology: Python _Flask_ as a web interface.  _Sqlite3_ to store the image information and transactions, also handling the work of storing new images. Though we am applying a back-end / data developer intern position, I still used a quarter of the total time for front-end design. :)
+
+For the backend application, we utilized Python _Flask_ and _Sqlite3_ for image uploading, storing and duplicate checking purposes. In particular, we used http post action to trigger the upload process of images, and built-in functionality of HTML to check the data integrity. (i.e. If the user's input is a valid number). Since the application requires uploading, which shall be treated extremely seriously, we also put a very strict secure requirement on file's name and extension, using secure_filename from werkzeug.utils. A cool feature we implemented is that we use some _Sqlite3_ code to check a if a certain image of same price has appeared on the website (Inventory) or not. If it does, we will treat the new upload as adding stocks but not putting up new images for sell.   
+
+For the frontend, we mainly uses HTML5 with Bootstrap 5.0 for our clear and easy-understanding user interface. _Flask_'s render_template function is used for updating data from past transactions. For the current stage, we automatically change every submitted image file to 256x256 size because of the website's capacity. we also have built a file-upload page which make a good use of the form component of Bootstrap. Besides, a message website is included to remind the user if the purchased in successful or not. The message webisite uses an alert component which makes user have a better sense to the new transaction.
 
 ## Usage
 
-To use this application, simply run `python3 server.py` from the command line.
-This will create the appropriate database tables and start the Flask server.
+Requirements: Python3( Packages: Flask, sqlite3, werkzeug)
+First,
 
-After this, open a web browser at the address given by Flask (usually http://127.0.0.1:5000).
-You will see a listing of products with associated data, such as their name, price, stock,
-and, of course, the image for said product. All of this data is pulled directly from a DB
-table and generated live with an HTML template. The images themselves are served from a static
-images folder.
+    $ git clone https://github.com/HEC2018/Shopify_challenge_Fall_2021.git
 
-A user can also try to buy any product by clicking the BUY button next to its image. This will
-verify that there are any left in stock, and will record the transaction (including time,
-product, and value) in our transactions table, while decrementing the product's inventory
-appropriately. Note that on the home page, we can see the total value of all transactions
-we have processed to date.
+To run this application, run `python3 server.py` from the command line, which will create the database tables and start the Flask server automatically.
 
-## Possible Features
+Then, open a web browser at the address given by Flask (http://127.0.0.1:5000). The webiste is the main website and there will be a list of images with related data like their name, price, stock, sample. All of this datas are pulled from _Sqlite3_ DB table and rendered through _Flask_. Initially some images are appeared on the page as a sample to the website. The initial images are stored within the static/images folder locally. However, by clicking "Clear all images" button on the website, user may reach to an empty site and starts to upload images of he favors. For developing and testing purposes, a button named "Reset" can resotre the page to the very beginning stage, with sampled pictures shown.
 
-We could add a feature such as adding/removing products. This would be straightforward to
-implement using a simple HTTP form that would POST an image and its data to our server,
-allowing us to save the image to our images folder and update our products table. Another
-complimentary form would let us remove products from the database and delete the image from
-disk.
+By clicking "Upload a picture for sell" button, the user will be directed to a uploading page where he can choose the file he wants to put up for sell locally from his device, and makes up the price and number of quantities that he wants to put up. For security reasons, the uploading files must end with one of .jpg, .png, .jpeg, or .gif. (Also any uppercase form of these extensions). Strict requirement to these files since we need to ensure that nothing vulnerable will be saved to the server. Besides, for protecting purposes of database, we also put a secure check on the file's name, using werkzeug.utils. The step is necessary since the file's name will be the final product's name showned on the top page. 
 
-Another feature would be access control, allowing us to have different users of the image
-repository. One such user could be a vendor and another could be a customer. We could verify
-vendors by a login form that would give the browser an access token, allowing the application
-to serve administrative tools to the user such as adding/removing products, viewing earnings,
-and managing inventory. Customers could save payment information allowing them to easily buy
-products without having to enter their payment data again each time.
+The user can also try to purchase any images he want by clicking the "Purchase one" button next to the image (On the rightmost column). This step will
+check the inventory that there are images remaining in the stock, and recorded the transaction (time when transaction happens, image name, price of image) in the transactions table of database. The process will also update the product's inventory in Databse appropriately. 
+
+A small design for user is a nav bar that shows how much the images that a customer has purchased on this website. The number is showed on the right side of the nav bar on top. 
+
+## Test guides
+
+For testing purposes, the "tests" directory contains some pictures that can be used to put up. Testers can try to upload these pictures one by one with different prices or multiple of them with same price. After uploading, testers can first verify the new rows put up on the websire representing the new added images, ensuring them with correct price and quantity. For adding some past existed images, testers shall validate the new quantity/stock of them. After uploading, testers can try to purchase some of images (a combination of sample images from server or new added images) and see the total value of images.
+
+To start a blank test, tester shall click "Clear all" for initial environment setup. Remind that Reset will restore the sample images from the server.
+
+## What's next for this repo
+
+We could add features that requires login or access control. By allowing that, the website allows different users to surf the website at the same time. We can implement a personal wallet that represents that credit that a customer can use. The wallet can also be used to collect the money from others, as well as users may purchase some images from other people and sell again. We could implement such feature by a login form of HTML5 that would give the browser an access token, allowing the application to serve some administrative tools to users, such as viewing earnings or managing stock. Customers purchase images using the money from wallet instead of filling a lot of transaction information when using some common checkout methods, like visa card or paypal. Users only need to put money in the wallet at the very begining of using this websire, then purchasing and selling images will be extremely by just moving fingers. 
+
+
