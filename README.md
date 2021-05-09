@@ -43,3 +43,6 @@ To start a blank test, tester shall click "Clear all" for initial environment se
 
 I could add features that requires login or access control. By allowing that, the website allows different users to surf the website at the same time. I can implement a personal wallet that represents that credit that a customer can use on the websire. The wallet can also be used to collect the money from other customers, as well as users may purchase some images from other people and re-sell again. We could implement such feature by a login form of HTML5 that would give the browser an access token, allowing the application to serve some administrative tools to users, such as viewing earnings or managing stock. Customers purchase images would prefer using the money from wallet to filling a lot of transaction information when using some common checkout methods, like visa card or paypal. Users only need to put money in the wallet at the very begining, then purchasing and selling images will be extremely easy by just clivking buttons. 
 
+## Demo link
+
+Youtube: https://youtu.be/8P_WeGQONUM
